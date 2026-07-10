@@ -6,11 +6,8 @@ import random
 import time
 from datetime import datetime
 
-# Load environment variables
 load_dotenv()
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
-
-# Page Configuration
 st.set_page_config(
     page_title="AI Multiverse",
     page_icon="🌌",
@@ -18,7 +15,6 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Minimal Custom CSS for styling tweaks
 st.markdown("""
 <style>
     .stChatInputContainer { padding-bottom: 20px; }
@@ -26,11 +22,11 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Initialize Session State
+
 if "history" not in st.session_state:
     st.session_state.history = []
 
-# --- DATA DICTIONARIES ---
+
 personalities = {
     "🦾 Iron Man": "You are Tony Stark (Iron Man). Speak confidently with humor and intelligence.",
     "🦇 Batman": "You are Batman. Be dark, serious and mysterious.",
@@ -50,7 +46,7 @@ personalities = {
     "🎬 Deadpool": "Talk like Deadpool with funny sarcasm."
 }
 
-# Avatar mapping for chat bubbles
+
 avatars = { key: key.split(" ")[0] for key in personalities.keys() }
 
 styles = {
@@ -73,7 +69,7 @@ surprise_prompts = [
     "What is happiness?", "Give me study tips.", "Write a poem."
 ]
 
-# --- SIDEBAR: SETTINGS & TOOLS ---
+
 with st.sidebar:
     st.title("⚙️ Settings")
     
@@ -113,8 +109,6 @@ with st.sidebar:
             file_name="multiverse_chat.txt",
             use_container_width=True
         )
-
-# --- MAIN APP UI ---
 st.title("🌌 The Multiverse Chatbot")
 st.caption(f"Currently talking to: **{personality}** | Style: **{reply_style}**")
 
@@ -126,8 +120,7 @@ for chat in st.session_state.history:
         st.caption(f"{chat['personality']} • {chat['time']}")
         st.markdown(chat["ai"])
 
-# --- INPUT HANDLING ---
-# Trigger either from chat input or the surprise button
+
 user_input = st.chat_input("💬 Type your message to the multiverse...")
 
 if surprise_clicked:
@@ -138,11 +131,11 @@ if user_input:
         st.error("Message should be less than 500 characters.")
         st.stop()
 
-    # 1. Display user message immediately
+    
     with st.chat_message("user", avatar="👤"):
         st.markdown(user_input)
 
-    # 2. Prepare the prompt
+  
     system_prompt = f"""
     {personalities[personality]}
     {styles[reply_style]}
@@ -151,7 +144,6 @@ if user_input:
     User: {user_input}
     """
 
-    # 3. Generate and display AI response
     with st.chat_message("assistant", avatar=avatars.get(personality, "🤖")):
         with st.spinner("Thinking..."):
             try:
@@ -163,12 +155,9 @@ if user_input:
                 reply = response.text
                 end = time.time()
                 current_time = datetime.now().strftime("%I:%M %p")
-                
-                # Show the response
+            
                 st.caption(f"{personality} • {current_time} (Took {round(end-start, 2)}s)")
                 st.markdown(reply)
-                
-                # Save to history
                 st.session_state.history.append({
                     "user": user_input,
                     "ai": reply,
@@ -179,11 +168,11 @@ if user_input:
             except Exception as e:
                 st.error(f"Error generating response: {e}")
 
-# Footer
+
 st.markdown("""
 <div class="footer">
     <hr>
-    🚀 <b>AI Multiverse v2.0</b><br>
-    Developed using ❤️ Streamlit + Google Gemini
+    🚀 <b>AI Multiverse Upgraded</b><br>
+    
 </div>
 """, unsafe_allow_html=True)
